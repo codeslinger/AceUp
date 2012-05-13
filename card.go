@@ -77,11 +77,24 @@ func (card Card) Suit() Suit {
   return NoSuit
 }
 
-// Compare two cards, returning:
+// Compare two cards by rank only, returning:
 //   1 if this card is higher
 //  -1 if the other card is higher, or
 //   0 if they represent the same card.
 func (card Card) Compare(other Card) int {
+  if card.Rank() > other.Rank() {
+    return 1
+  } else if card.Rank() < other.Rank() {
+    return -1
+  }
+  return 0
+}
+
+// Compare two cards by rank first and then suit, returning:
+//   1 if this card is higher
+//  -1 if the other card is higher, or
+//   0 if they represent the same card.
+func (card Card) FullCompare(other Card) int {
   if card.Rank() > other.Rank() {
     return 1
   } else if card.Rank() < other.Rank() {
