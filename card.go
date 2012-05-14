@@ -44,17 +44,21 @@ var suits    = []Suit{Club, Diamond, Heart, Spade}
 var rankStr  = []string{"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"}
 var suitStr  = []string{"c", "d", "h", "s"}
 
-// ----- PUBLIC API ---------------------------------------------------------
+// ----- SUIT PUBLIC API ----------------------------------------------------
 
 // Is this suit valid?
 func (suit Suit) Valid() bool {
   return !(suit < Club || suit > Spade)
 }
 
+// ----- RANK PUBLIC API ----------------------------------------------------
+
 // Is this rank valid?
 func (rank Rank) Valid() bool {
   return !(rank < Two || rank > Ace)
 }
+
+// ----- CARD PUBLIC API ----------------------------------------------------
 
 // Is this card valid?
 func (card Card) Valid() bool {
@@ -78,35 +82,23 @@ func (card Card) Suit() Suit {
 }
 
 // Compare two cards by rank only, returning:
-//   1 if this card is higher
-//  -1 if the other card is higher, or
-//   0 if they represent the same card.
+//   >0 if this card rank is higher
+//   <0 if the other card rank is higher, or
+//    0 if they represent the same card rank.
 func (card Card) Compare(other Card) int {
-  if card.Rank() > other.Rank() {
-    return 1
-  } else if card.Rank() < other.Rank() {
-    return -1
-  }
-  return 0
+  return int(card.Rank() - other.Rank())
 }
 
 // Compare two cards by rank first and then suit, returning:
-//   1 if this card is higher
-//  -1 if the other card is higher, or
-//   0 if they represent the same card.
+//   >0 if this card is higher
+//   <0 if the other card is higher, or
+//    0 if they represent the same card.
 func (card Card) FullCompare(other Card) int {
-  if card.Rank() > other.Rank() {
-    return 1
-  } else if card.Rank() < other.Rank() {
-    return -1
-  } else {
-    if card.Suit() > other.Suit() {
-      return 1
-    } else if card.Suit() < other.Suit() {
-      return -1
-    }
+  cmp := card.Compare(other)
+  if cmp != 0 {
+    return cmp
   }
-  return 0
+  return int(card.Suit() - other.Suit())
 }
 
 // Return string representation of this card.
@@ -121,15 +113,18 @@ func (card Card) ToString() string {
 // NOTE: the constructor for a card is private; external code should not be
 // creating cards, just using them as part of Decks and Hands
 func newCard(suit Suit, rank Rank) (card Card) {
-  card = Card(((byte(suit) << 4) & 0xF0) | (byte(rank) & 0x0F))
+  card = Card(((byte(rank) << 4) & 0xF0) | (byte(suit) & 0x0F))
   return
 }
 
+// NB: we put the rank first in the byte and then the suit so the cards will
+// sort properly when converted to integral values
+
 func (card Card) rank() Rank {
-  return ranks[(byte(card) & 0x0F) - 1]
+  return ranks[((byte(card) >> 4) & 0x0F) - 1]
 }
 
 func (card Card) suit() Suit {
-  return suits[((byte(card) >> 4) & 0x0F) - 1]
+  return suits[(byte(card) & 0x0F) - 1]
 }
 
