@@ -70,6 +70,7 @@ func (hand *Hand) DealTo(card Card) {
   hand.pos++
 }
 
+// Evaluate this hand's rank.
 func (hand *Hand) Evaluate() {
   var cards []Card
 
