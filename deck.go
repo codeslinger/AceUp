@@ -73,9 +73,9 @@ func (deck *Deck) swap(i int, j int) {
 // randInt generates a cryptographically-secure pseudo-random number in the
 // range [0,max).
 // It returns the generated number on success or -1 if a number could not
-// be generated or max was less than 0.
+// be generated or max was less than or equal to 0.
 func randInt(max int) int {
-  if max < 0 {
+  if max <= 0 {
     return -1
   }
   m := big.NewInt(int64(max))
