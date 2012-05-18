@@ -4,7 +4,7 @@
 package main
 
 import (
-//  "sort"
+  "sort"
 )
 
 // hand ranks in ascending order (i.e. StraightFlush beats all)
@@ -106,7 +106,7 @@ func (hand *Hand) copyAndSortCards() []Card {
   }
   t := make([]Card, hand.Size())
   copy(hand.cards, t)
-  //sort.Sort(t)
+  sort.Sort(Cards(t))
   return t
 }
 

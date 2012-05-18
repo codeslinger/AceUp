@@ -34,9 +34,10 @@ const (
   Ace    = 13
 )
 
-type Rank byte
-type Suit byte
-type Card byte
+type Rank  byte
+type Suit  byte
+type Card  byte
+type Cards []Card
 
 var NoCard   = newCard(NoSuit, NoRank)
 var ranks    = []Rank{Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace}
@@ -56,6 +57,23 @@ func (suit Suit) Valid() bool {
 // Is this rank valid?
 func (rank Rank) Valid() bool {
   return !(rank < Two || rank > Ace)
+}
+
+// ----- CARDS PUBLIC API ---------------------------------------------------
+
+// All these implement the sort.Interface interface so we can sort an array
+// of Card values
+
+func (cards Cards) Len() int {
+  return len(cards)
+}
+
+func (cards Cards) Swap(i, j int) {
+  cards[i], cards[j] = cards[j], cards[i]
+}
+
+func (cards Cards) Less(i, j int) bool {
+  return cards[i].Compare(cards[j]) < 0
 }
 
 // ----- CARD PUBLIC API ----------------------------------------------------
