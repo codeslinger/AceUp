@@ -33,7 +33,7 @@ type Hand struct {
 
 var handRanks = []HandRank{HighCard, OnePair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush}
 
-// ----- PUBLIC API ---------------------------------------------------------
+// ----- HAND PUBLIC API -----------------------------------------------------
 
 // Construct a new Hand instance.
 func NewHand(maxCards int) *Hand {
@@ -98,7 +98,7 @@ func (hand *Hand) Evaluate() {
   }
 }
 
-// ----- INTERNAL FUNCTIONS -------------------------------------------------
+// ----- INTERNAL FUNCTIONS --------------------------------------------------
 
 func (hand *Hand) copyAndSortCards() []Card {
   if hand.Size() < 1 {
@@ -166,19 +166,20 @@ func hasStraight(cards []Card) bool {
   if len(cards) < 5 {
     return false
   }
-  inARow := 0
+  inARow := 1
   for i := range cards {
-    if i > 0 {
-      diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
-      if diff == 1 {
+    if i == 0 {
+      continue
+    }
+    diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
+    if diff == 1 {
+      inARow++
+      if inARow == 4 && cards[i].Rank() == Two && cards[0].Rank() == Ace {
+        // found a Wheel (A-2-3-4-5)
         inARow++
-        if inARow == 4 && cards[i].Rank() == Two && cards[0].Rank() == Ace {
-          // found a Wheel (A-2-3-4-5)
-          inARow++
-        }
-      } else if diff != 0 {
-        inARow = 1
       }
+    } else if diff != 0 {
+      inARow = 1
     }
     if inARow == HAND_SIZE {
       return true
@@ -195,7 +196,24 @@ func hasTwoPair(cards []Card) bool {
   if len(cards) < 4 {
     return false
   }
-  return false
+  pairs := 0
+  inARow := 1
+  for i := range cards {
+    if i == 0 {
+      continue
+    }
+    diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
+    if diff == 0 {
+      inARow++
+      if inARow == 2 {
+        pairs++
+        inARow = 1
+      }
+    } else {
+      inARow = 0
+    }
+  }
+  return pairs >= 2
 }
 
 func hasPair(cards []Card) bool {
@@ -206,18 +224,19 @@ func hasRunOfSameRank(cards []Card, runLength int) bool {
   if len(cards) < runLength {
     return false
   }
-  inARow := 0
+  inARow := 1
   for i := range cards {
-    if i > 0 {
-      diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
-      if diff == 0 {
-        inARow++
-        if inARow == runLength {
-          return true
-        }
-      } else {
-        inARow = 1
+    if i == 0 {
+      continue
+    }
+    diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
+    if diff == 0 {
+      inARow++
+      if inARow == runLength {
+        return true
       }
+    } else {
+      inARow = 1
     }
   }
   return false

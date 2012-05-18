@@ -15,7 +15,7 @@ type Deck struct {
   cards [DECK_SIZE]Card
 }
 
-// ----- PUBLIC API ---------------------------------------------------------
+// ----- DECK PUBLIC API -----------------------------------------------------
 
 func NewDeck() *Deck {
   deck := new(Deck)
@@ -64,7 +64,7 @@ func (deck *Deck) Burn() {
   }
 }
 
-// ----- INTERNAL FUNCTIONS -------------------------------------------------
+// ----- INTERNAL FUNCTIONS --------------------------------------------------
 
 func (deck *Deck) swap(i int, j int) {
   deck.cards[i], deck.cards[j] = deck.cards[j], deck.cards[i]

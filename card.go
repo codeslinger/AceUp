@@ -45,21 +45,21 @@ var suits    = []Suit{Club, Diamond, Heart, Spade}
 var rankStr  = []string{"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"}
 var suitStr  = []string{"c", "d", "h", "s"}
 
-// ----- SUIT PUBLIC API ----------------------------------------------------
+// ----- SUIT PUBLIC API -----------------------------------------------------
 
 // Is this suit valid?
 func (suit Suit) Valid() bool {
   return !(suit < Club || suit > Spade)
 }
 
-// ----- RANK PUBLIC API ----------------------------------------------------
+// ----- RANK PUBLIC API -----------------------------------------------------
 
 // Is this rank valid?
 func (rank Rank) Valid() bool {
   return !(rank < Two || rank > Ace)
 }
 
-// ----- CARDS PUBLIC API ---------------------------------------------------
+// ----- CARDS PUBLIC API ----------------------------------------------------
 
 // All these implement the sort.Interface interface so we can sort an array
 // of Card values
@@ -76,7 +76,7 @@ func (cards Cards) Less(i, j int) bool {
   return cards[i].Compare(cards[j]) < 0
 }
 
-// ----- CARD PUBLIC API ----------------------------------------------------
+// ----- CARD PUBLIC API -----------------------------------------------------
 
 // Is this card valid?
 func (card Card) Valid() bool {
@@ -126,7 +126,7 @@ func (card Card) ToString() string {
                      suitStr[card.Suit() - 1])
 }
 
-// ----- INTERNAL FUNCTIONS -------------------------------------------------
+// ----- INTERNAL FUNCTIONS --------------------------------------------------
 
 // NOTE: the constructor for a card is private; external code should not be
 // creating cards, just using them as part of Decks and Hands
