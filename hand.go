@@ -144,7 +144,23 @@ func hasFullHouse(cards []Card) bool {
   if len(cards) < 5 {
     return false
   }
-  return false
+  trips := 0
+  pairs := 0
+  inARow := 1
+  for i := range cards {
+    diff := byte(cards[i].Rank()) - byte(cards[i - 1].Rank())
+    if diff == 0 {
+      inARow++
+      if inARow == 3 {
+        trips++
+      } else if inARow == 2 {
+        pairs++
+      }
+    } else {
+      inARow = 0
+    }
+  }
+  return trips > 1 || (trips == 1 && pairs > 1)
 }
 
 func hasFlush(cards []Card) bool {
