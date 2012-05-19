@@ -17,6 +17,7 @@ type Deck struct {
 
 // ----- DECK PUBLIC API -----------------------------------------------------
 
+// Create a new deck of cards.
 func NewDeck() *Deck {
   deck := new(Deck)
   deck.pos = 0
@@ -31,11 +32,8 @@ func NewDeck() *Deck {
   return deck
 }
 
-//
-// Shuffle() uses a Fisher-Yates shuffle:
-//
-//   http://en.wikipedia.org/wiki/Fisher-Yates_shuffle
-//
+// Shuffle this deck of cards. It uses a Fisher-Yates shuffle:
+// http://en.wikipedia.org/wiki/Fisher-Yates_shuffle
 func (deck *Deck) Shuffle() {
   for i := len(deck.cards) - 1; i > 0; i-- {
     if j := randInt(i + 1); j >= 0 && i != j {
@@ -45,10 +43,12 @@ func (deck *Deck) Shuffle() {
   deck.pos = 0
 }
 
+// Is this deck empty?
 func (deck *Deck) Empty() bool {
   return deck.pos >= len(deck.cards) - 1
 }
 
+// Deal the top card from this deck.
 func (deck *Deck) Deal() (card Card) {
   if deck.Empty() {
     return NoCard
@@ -58,6 +58,7 @@ func (deck *Deck) Deal() (card Card) {
   return card
 }
 
+// Burn a card, essentially discarding it.
 func (deck *Deck) Burn() {
   if !deck.Empty() {
     deck.Deal()
@@ -71,9 +72,8 @@ func (deck *Deck) swap(i int, j int) {
 }
 
 // randInt generates a cryptographically-secure pseudo-random number in the
-// range [0,max).
-// It returns the generated number on success or -1 if a number could not
-// be generated or max was less than or equal to 0.
+// range [0,max). It returns the generated number on success or -1 if a number
+// could not be generated or max was less than or equal to 0.
 func randInt(max int) int {
   if max <= 0 {
     return -1
