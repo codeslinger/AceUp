@@ -1,11 +1,10 @@
-// vim:set ts=2 sw=2 et ai ft=go:
-// Copyright (c) 2012 Toby DiPasquale. See accompanying LICENSE file for
+// vim:set ts=2 noet ai ft=go:
+// Copyright (c) Toby DiPasquale. See accompanying LICENSE file for
 // detailed licensing information.
 package main
 
 import "fmt"
 
 func main() {
-  fmt.Printf("blorp\n")
+	fmt.Printf("blorp\n")
 }
-
