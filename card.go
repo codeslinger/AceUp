@@ -121,9 +121,7 @@ func (card Card) FullCompare(other Card) int {
 
 // Return string representation of this card.
 func (card Card) ToString() string {
-	return fmt.Sprintf("%s%s",
-		rankStr[card.Rank()-1],
-		suitStr[card.Suit()-1])
+	return fmt.Sprintf("%s%s", rankStr[card.Rank()-1], suitStr[card.Suit()-1])
 }
 
 // ----- INTERNAL FUNCTIONS --------------------------------------------------

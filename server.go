@@ -124,4 +124,3 @@ func (server *Server) logAcceptError(e error) {
 		fmt.Printf("error during accept: %v\n", e)
 	}
 }
-
