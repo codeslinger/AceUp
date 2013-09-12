@@ -86,3 +86,49 @@ func (card Card) Compare(other Card) int {
 func (card Card) ToString() string {
 	return fmt.Sprintf("%s%s", rankStr[byte(card)%13], suitStr[byte(card)/13])
 }
+
+// Decode the string representation of a card into a Card instance.
+func CardFromString(s string) (Card, error) {
+	var rank Rank
+	var suit Suit
+
+	switch s[0] {
+	case '2':
+		rank = Two
+	case '3':
+		rank = Three
+	case '4':
+		rank = Four
+	case '5':
+		rank = Five
+	case '6':
+		rank = Six
+	case '7':
+		rank = Seven
+	case '8':
+		rank = Eight
+	case '9':
+		rank = Nine
+	case 'T':
+		rank = Ten
+	case 'J':
+		rank = Jack
+	case 'Q':
+		rank = Queen
+	case 'K':
+		rank = King
+	case 'A':
+		rank = Ace
+	}
+	switch s[1] {
+	case 'c':
+		suit = Club
+	case 'd':
+		suit = Diamond
+	case 'h':
+		suit = Heart
+	case 's':
+		suit = Spade
+	}
+	return NewCard(rank, suit)
+}

@@ -49,11 +49,11 @@ func (deck *Deck) Empty() bool {
 }
 
 // Deal the top card from this deck.
-func (deck *Deck) Deal() (card Card) {
+func (deck *Deck) Deal() Card {
 	if deck.Empty() {
-		return NoCard
+		panic("empty to deal from empty deck")
 	}
-	card = deck.cards[deck.pos]
+	card := deck.cards[deck.pos]
 	deck.pos++
 	return card
 }

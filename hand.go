@@ -4,6 +4,7 @@ package main
 
 import (
 	"sort"
+	"strings"
 )
 
 // hand ranks in ascending order (i.e. StraightFlush beats all)
@@ -28,18 +29,6 @@ type Hand struct {
 	cards []Card
 	pos   int
 	rank  HandRank
-}
-
-var handRanks = []HandRank{
-	HighCard,
-	OnePair,
-	TwoPair,
-	ThreeOfAKind,
-	Straight,
-	Flush,
-	FullHouse,
-	FourOfAKind,
-	StraightFlush,
 }
 
 // ----- HAND PUBLIC API -----------------------------------------------------
@@ -69,11 +58,10 @@ func (hand *Hand) Size() int {
 }
 
 // Deal this hand a card. Attempts to deal this hand more than its maximum
-// number of cards (as specified at construction time) will be silently
-// ignored.
+// number of cards (as specified at construction time) will cause a panic.
 func (hand *Hand) DealTo(card Card) {
 	if hand.pos >= len(hand.cards) {
-		return
+		panic("attempt to deal too many cards to hand")
 	}
 	hand.cards[hand.pos] = card
 	hand.pos++
@@ -81,11 +69,10 @@ func (hand *Hand) DealTo(card Card) {
 
 // Evaluate this hand's rank.
 func (hand *Hand) Evaluate() {
-	var cards []Card
-
-	if cards = hand.copyAndSortCards(); cards == nil {
+	if hand.Size() < 1 {
 		return
 	}
+	cards := hand.copyAndSortCards()
 	if hasStraightFlush(cards) {
 		hand.rank = StraightFlush
 	} else if hasQuads(cards) {
@@ -107,18 +94,32 @@ func (hand *Hand) Evaluate() {
 	}
 }
 
+// What is this hand's rank?
+func (hand *Hand) Rank() HandRank {
+	return hand.rank
+}
+
+// Return string representation of this set of cards.
+func printHand(cards []Card) string {
+	rv := make([]string, len(cards))
+	for i, card := range cards {
+		rv[i] = card.ToString()
+	}
+	return strings.Join(rv, ",")
+}
+
 // ----- INTERNAL FUNCTIONS --------------------------------------------------
 
+// Copy this hand's cards into a new array and sort them according to the
+// Cards interface.
 func (hand *Hand) copyAndSortCards() []Card {
-	if hand.Size() < 1 {
-		return nil
-	}
 	t := make([]Card, hand.Size())
-	copy(hand.cards, t)
+	copy(t, hand.cards)
 	sort.Sort(Cards(t))
 	return t
 }
 
+// Does this set of cards contain a straight flush?
 func hasStraightFlush(cards []Card) bool {
 	if len(cards) < 5 {
 		return false
@@ -145,10 +146,12 @@ func hasStraightFlush(cards []Card) bool {
 	return false
 }
 
+// Does this set of cards contain four of a kind?
 func hasQuads(cards []Card) bool {
 	return hasRunOfSameRank(cards, 4)
 }
 
+// Does this set of cards contain a full house?
 func hasFullHouse(cards []Card) bool {
 	if len(cards) < 5 {
 		return false
@@ -156,7 +159,7 @@ func hasFullHouse(cards []Card) bool {
 	trips := 0
 	pairs := 0
 	inARow := 1
-	for i := range cards {
+	for i := 1; i < len(cards); i++ {
 		diff := byte(cards[i].Rank()) - byte(cards[i-1].Rank())
 		if diff == 0 {
 			inARow++
@@ -166,12 +169,13 @@ func hasFullHouse(cards []Card) bool {
 				pairs++
 			}
 		} else {
-			inARow = 0
+			inARow = 1
 		}
 	}
 	return trips > 1 || (trips == 1 && pairs > 1)
 }
 
+// Does this set of cards contain a flush?
 func hasFlush(cards []Card) bool {
 	if len(cards) < 5 {
 		return false
@@ -187,6 +191,7 @@ func hasFlush(cards []Card) bool {
 	return false
 }
 
+// Does this set of cards contain a straight?
 func hasStraight(cards []Card) bool {
 	if len(cards) < 5 {
 		return false
@@ -213,10 +218,12 @@ func hasStraight(cards []Card) bool {
 	return false
 }
 
+// Does this set of cards contain a set? (three of a kind)
 func hasSet(cards []Card) bool {
 	return hasRunOfSameRank(cards, 3)
 }
 
+// Does this set of cards contain two pair?
 func hasTwoPair(cards []Card) bool {
 	if len(cards) < 4 {
 		return false
@@ -241,10 +248,12 @@ func hasTwoPair(cards []Card) bool {
 	return pairs >= 2
 }
 
+// Does this set of cards contain a pair?
 func hasPair(cards []Card) bool {
 	return hasRunOfSameRank(cards, 2)
 }
 
+// Does this set of cards have a run of runLength cards with the same rank?
 func hasRunOfSameRank(cards []Card, runLength int) bool {
 	if len(cards) < runLength {
 		return false
