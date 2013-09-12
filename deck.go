@@ -8,11 +8,9 @@ import (
 	"math/big"
 )
 
-const DECK_SIZE = 52
-
 type Deck struct {
 	pos   int
-	cards [DECK_SIZE]Card
+	cards [MAX_CARD]Card
 }
 
 // ----- DECK PUBLIC API -----------------------------------------------------
@@ -20,12 +18,10 @@ type Deck struct {
 // Create a new deck of cards.
 func NewDeck() *Deck {
 	deck := new(Deck)
-	deck.pos = 0
-
 	i := 0
-	for suit := range suits {
-		for rank := range ranks {
-			deck.cards[i] = newCard(suits[suit], ranks[rank])
+	for suit := Club; suit <= Spade; suit++ {
+		for rank := Two; rank <= Ace; rank++ {
+			deck.cards[i], _ = NewCard(Rank(rank), Suit(suit))
 			i++
 		}
 	}
@@ -43,9 +39,14 @@ func (deck *Deck) Shuffle() {
 	deck.pos = 0
 }
 
+// Number of cards remaining that can be dealt in this Deck.
+func (deck *Deck) CardsRemaining() int {
+	return (len(deck.cards) - deck.pos) - 1
+}
+
 // Is this deck empty?
 func (deck *Deck) Empty() bool {
-	return deck.pos >= len(deck.cards)-1
+	return deck.CardsRemaining() <= 0
 }
 
 // Deal the top card from this deck.
@@ -71,9 +72,9 @@ func (deck *Deck) swap(i int, j int) {
 	deck.cards[i], deck.cards[j] = deck.cards[j], deck.cards[i]
 }
 
-// randInt generates a cryptographically-secure pseudo-random number in the
-// range [0,max). It returns the generated number on success or -1 if a number
-// could not be generated or max was less than or equal to 0.
+// randInt generates a pseudo-random number in the range [0,max). It returns
+// the generated number on success or -1 if a number could not be generated or
+// max was less than or equal to 0.
 func randInt(max int) int {
 	if max <= 0 {
 		return -1
