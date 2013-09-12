@@ -48,8 +48,8 @@ var (
 // ----- CARDS PUBLIC API ----------------------------------------------------
 
 // Implement sort.Interface so we can sort Cards
-func (c Cards) Len() int { return len(c) }
-func (c Cards) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
+func (c Cards) Len() int           { return len(c) }
+func (c Cards) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c Cards) Less(i, j int) bool { return c[i].Compare(c[j]) < 0 }
 
 // ----- CARD PUBLIC API -----------------------------------------------------
@@ -62,7 +62,7 @@ func NewCard(rank Rank, suit Suit) (Card, error) {
 	if suit < Club || suit > Spade {
 		return 0, fmt.Errorf("invalid suit specified")
 	}
-	return Card((byte(suit) - 1) * 13 + byte(rank) - 1), nil
+	return Card((byte(suit)-1)*13 + byte(rank) - 1), nil
 }
 
 // Get the rank of this card.
@@ -85,5 +85,5 @@ func (card Card) Compare(other Card) int {
 
 // Return string representation of this card.
 func (card Card) ToString() string {
-	return fmt.Sprintf("%s%s", rankStr[byte(card) % 13], suitStr[byte(card) / 13])
+	return fmt.Sprintf("%s%s", rankStr[byte(card)%13], suitStr[byte(card)/13])
 }
