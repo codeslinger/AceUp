@@ -98,15 +98,27 @@ func (card Card) String() string {
 
 // ----- DECK API ------------------------------------------------------------
 
-type Deck []Card
+var EmptyDeck = fmt.Errorf("deck is empty")
+
+type Deck interface {
+	Shuffle()
+	Deal() Card
+	Empty() bool
+	Remaining() int
+}
+
+type PokerDeck struct {
+	cards []Card
+	pos   int
+}
 
 // Create a new deck of cards. This deck will *NOT* be shuffled.
-func NewDeck() Deck {
+func NewPokerDeck() *PokerDeck {
+	deck := &PokerDeck{cards: make([]Card, CardsPerDeck)}
 	n := 0
-	deck := make([]Card, CardsPerDeck)
 	for suit := Club; suit >= Spade; suit >>= 1 {
 		for rank := Deuce; rank <= Ace; rank++ {
-			deck[n] = NewCard(rank, suit)
+			deck.cards[n] = NewCard(rank, suit)
 			n++
 		}
 	}
@@ -115,18 +127,39 @@ func NewDeck() Deck {
 
 // Shuffle this deck of cards. We use a Fisher-Yates shuffle:
 // http://en.wikipedia.org/wiki/Fisher-Yates_shuffle
-func (deck Deck) Shuffle() {
-	for i := len(deck) - 1; i > 0; i-- {
+func (deck *PokerDeck) Shuffle() {
+	for i := len(deck.cards) - 1; i > 0; i-- {
 		if j := randInt(i + 1); j >= 0 && i != j {
-			deck[i], deck[j] = deck[j], deck[i]
+			deck.cards[i], deck.cards[j] = deck.cards[j], deck.cards[i]
 		}
 	}
+	deck.pos = 0
+}
+
+// Deal one card from the deck. Returns error on empty deck.
+func (deck *PokerDeck) Deal() Card {
+	if deck.Empty() {
+		panic(EmptyDeck)
+	}
+	card := deck.cards[deck.pos]
+	deck.pos++
+	return card
+}
+
+// Is this deck empty?
+func (deck *PokerDeck) Empty() bool {
+	return deck.Remaining() == 0
+}
+
+// How many cards are remaining in this deck?
+func (deck *PokerDeck) Remaining() int {
+	return (len(deck.cards) - deck.pos) - 1
 }
 
 // ----- PUBLIC HAND EVALUATION API ------------------------------------------
 
 // Determine the given hand's ranking. (i.e. StraightFlush, ThreeOfAKind, etc)
-func EvaluateHand(hand []Card) int {
+func EvaluateForHigh(hand []Card) int {
 	return handRank(eval7CardHand(hand))
 }
 
