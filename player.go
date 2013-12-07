@@ -9,31 +9,51 @@ const (
 
 var idStamp = 1
 
-type Player struct {
+// ----- Player Public API ---------------------------------------------------
+
+type Player interface {
+	Bankroll() uint64
+	Credit(uint64)
+	Debit(uint64)
+	Nick() string
+	ChangeNick(string)
+}
+
+func NewPlayer(n string, initialBankroll uint64) Player {
+	return &player{
+		nick:     n,
+		bankroll: initialBankroll,
+	}
+}
+
+func (p *player) Bankroll() uint64 {
+	return p.bankroll
+}
+
+func (p *player) Credit(amount uint64) {
+	p.bankroll += amount
+}
+
+func (p *player) Debit(amount uint64) {
+	if amount > p.bankroll {
+		p.bankroll = 0
+		return
+	}
+	p.bankroll -= amount
+}
+
+func (p *player) Nick() string {
+	return p.nick
+}
+
+func (p *player) ChangeNick(newNick string) {
+	p.nick = newNick
+}
+
+// ----- Player Internal API -------------------------------------------------
+
+type player struct {
 	id       uint64
 	nick     string
 	bankroll uint64
-}
-
-func NewPlayer(n string, initialBankroll uint64) *Player {
-	player := new(Player)
-	player.nick = n
-	player.bankroll = initialBankroll
-	return player
-}
-
-func (player *Player) Credit(amount uint64) {
-	player.bankroll += amount
-}
-
-func (player *Player) Debit(amount uint64) {
-	if amount > player.bankroll {
-		player.bankroll = 0
-		return
-	}
-	player.bankroll -= amount
-}
-
-func (player *Player) ChangeNick(newNick string) {
-	player.nick = newNick
 }
